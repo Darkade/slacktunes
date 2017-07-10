@@ -1,0 +1,33 @@
+api:
+  image: darkade/slacktunes-api:8.1.2-alpine # ../slacktunes-api #
+  ports:
+    - "4390:4390"
+  environment:
+    - MOPIDYURL=mopidy
+    - MOPIDYPORT=6680
+    - SLACKID=<SLACKID>
+    - SLACKSECRET=<SLACKSECRET>
+    - SLACKHOOK=<SLACKHOOK>
+    - LISTENURL=<LISTENURL>
+  links:
+    - mopidy
+
+mopidy:
+  image: darkade/mopidy:alpine2.1.0-r1 #../docker-mopidy #
+  expose:
+    - "6680"
+  links:
+    - icecast
+  entrypoint:
+    - mopidy
+    - -o audio/output=lamemp3enc ! shout2send mount=mopidy ip=icecast port=8000 password=hackme
+    - -o gmusic/username=<gmusic/username>
+    - -o gmusic/password=<gmusic/password>
+    - -o gmusic/bitrate=320
+
+icecast:
+  image: darkade/icecast:alpine3.6
+  ports:
+    - "8000:8000"
+  expose:
+    - "8000"
