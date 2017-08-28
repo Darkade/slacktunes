@@ -11,7 +11,7 @@ nginx:
     - ./config/:/etc/nginx/conf.d
 
 api:
-  image: darkade/slacktunes-api:8.1.2-alpine # ../slacktunes-api #
+  image: darkade/slacktunes-api:8.1.2-alpine # build: ../slacktunes-api #
   expose:
     - "4390"
   environment:
@@ -25,16 +25,14 @@ api:
     - mopidy
 
 mopidy:
-  image: darkade/mopidy:alpine2.1.0-r1 #../docker-mopidy #
+  image: darkade/mopidy:alpine2.1.0-r1 # build: ../docker-mopidy #
   expose:
     - "6680"
   links:
     - icecast
-  environment:
-    - ICECAST_SOURCE_PASSWORD=< ICECAST SOURCE PASSWORD >
   entrypoint:
     - mopidy
-    - -o audio/output=lamemp3enc ! shout2send mount=mopidy ip=icecast port=8000 password=$ICECAST_SOURCE_PASSWORD
+    - -o audio/output=lamemp3enc ! shout2send mount=mopidy ip=icecast port=8000 password=< ICECAST_SOURCE_PASSWORD >
 
 icecast:
   image: darkade/icecast:alpine3.6
